@@ -22,5 +22,6 @@ urlpatterns = [
     path('accounts/signup/', views.SignUpView.as_view()),
     path('accounts/', include('django.contrib.auth.urls')),
     path('',views.ProductView.as_view(),name='product'),
-    path('<uuid>/',views.ProductDetailView.as_view(), name='productDetail')
+    path('<int:pk>/',views.ProductDetailView.as_view(), name='productDetail'),
+     path('addtoshopcart/<int:pk>', views.AddCartView.as_view(), name='addtoshopcart'),
 ]

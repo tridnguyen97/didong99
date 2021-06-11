@@ -29,8 +29,8 @@
                             <div class="card-text">
                                 {{product.price}}
                             </div>
-                            <a href="/{{product.uuid}}" class="btn btn-warning">View detail</a>
-                            <button id="{{product.uuid}}" class="btn btn-warning">Add to cart</button>
+                            <a href="/{{product.id}}" class="btn btn-warning">View detail</a>
+                            <a href="/addtoshopcart/{{product.id}}" class="btn atc btn-warning">Add to cart</button>
                         </div>
                     </div>
                 </div>
@@ -55,4 +55,23 @@
             </div>
         </div>
     </body>
+    
+    <script type="text/javascript">
+        if(localStorage.getItem('cart') == null){
+            var cart = {};
+        }
+        else {
+            cart = JSON.parse(localStorage.getItem('cart'))
+        }
+    
+        $(document).on('click','.atc', function() {
+            console.log("The add to cart button is clicked")
+            var item_id = this.id.toString();
+
+            if(cart[item_id] != undefined) cart[item_id] = cart[item_id] + 1;
+            else cart[item_id] = 1;
+            localStorage.setItem('cart',JSON.stringify(cart))
+            console.log(Object.keys(cart).length)
+        })
+    </script>
 </html>
