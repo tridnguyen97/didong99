@@ -39,14 +39,6 @@ class AddCartView(edit.FormView):
     template_name = 'cart.html'
     success_url = '/'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        print(context)
-        return context
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'An error occured while processing the payment')
-        return super().form_invalid(form)
     def form_valid(self, form):
         current_user = self.request.user
         product_id = self.kwargs['pk']
@@ -58,10 +50,8 @@ class AddCartView(edit.FormView):
         else:
             control = 0 # The product is not in the cart"""
         if control==1: # Update  shopcart
-            print('here')
             data = Cart.objects.get(product_id=product_id, user_id=current_user.id)
             data.quantity += form.cleaned_data['quantity']
-            data.price_ht = 1.04
             data.save()  # save data
             print('Cart has been added')
         else : # Inser to Shopcart
@@ -69,40 +59,7 @@ class AddCartView(edit.FormView):
             data.user = current_user
             data.product =product
             data.quantity = form.cleaned_data['quantity']
-            data.price_ht = 1.05
             data.save()
-        print(data)
-        print('cart has been added')
         messages.success(self.request, "Product added to Shopcart ")
         return super().form_valid(form)
-    # def post(self, request, *arg, **kwarg):
-        url = '/'
-        current_user = self.request.user
-        product_id = self.kwargs['pk']
-        product = Product.objects.get(pk=product_id)
-        checkinproduct = Cart.objects.filter(product_id=product_id, user_id=current_user.id) # Check product in shopcart
-        if checkinproduct:
-            control = 1 # The product is in the cart
-        else:
-            control = 0 # The product is not in the cart"""
-
-        if self.request.method == 'POST':  # if there is a post
-            form = CartForm(self.request.POST)
-        if form.is_valid():
-            if control==1: # Update  shopcart
-                print('here')
-                data = Cart.objects.get(product_id=product_id, user_id=current_user.id)
-                data.quantity += form.cleaned_data['quantity']
-                data.save()  # save data
-                print('Cart has been added')
-            else : # Inser to Shopcart
-                data = Cart()
-                data.user_id = current_user.id
-                data.product_id =product_id
-                data.quantity = form.cleaned_data['quantity']
-                data.save()
-            print(data)
-            print('cart has been added')
-        messages.success(self.request, "Product added to Shopcart ")
-        return 0
-
+    
