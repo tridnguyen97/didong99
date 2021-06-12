@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin, auth
 from django.urls import path, include
 from banhang import views
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,5 +24,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('',views.ProductView.as_view(),name='product'),
     path('<int:pk>/',views.ProductDetailView.as_view(), name='productDetail'),
-     path('addtoshopcart/<int:pk>', views.AddCartView.as_view(), name='addtoshopcart'),
+    path('addtoshopcart/<int:pk>', login_required(views.AddCartView.as_view()), name='addtoshopcart'),
+    path('cart/',login_required(views.CartView.as_view()), name='cart')
 ]

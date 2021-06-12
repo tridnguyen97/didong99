@@ -4,7 +4,6 @@ from django.core.paginator import Paginator
 from .models import Cart, Product
 from .forms import CartForm, UserSignUpForm
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
 from django.contrib import messages
 
 # Create your views here.
@@ -36,14 +35,14 @@ class ProductDetailView(DetailView):
 
 class AddCartView(edit.FormView):
     form_class = CartForm
-    template_name = 'cart.html'
+    template_name = 'cart_add.html'
     success_url = '/'
 
     def form_valid(self, form):
         current_user = self.request.user
         product_id = self.kwargs['pk']
         product = Product.objects.get(pk=product_id)
-        checkinproduct = Cart.objects.filter(product_id=product_id, user_id=current_user.id) # Check product in shopcart
+        checkinproduct = Cart.objects.filter(user_id=current_user.id) # Check product in shopcart
         data = self.get_context_data()
         if checkinproduct:
             control = 1 # The product is in the cart
@@ -53,13 +52,28 @@ class AddCartView(edit.FormView):
             data = Cart.objects.get(product_id=product_id, user_id=current_user.id)
             data.quantity += form.cleaned_data['quantity']
             data.save()  # save data
-            print('Cart has been added')
         else : # Inser to Shopcart
             data = Cart()
             data.user = current_user
             data.product =product
             data.quantity = form.cleaned_data['quantity']
             data.save()
-        messages.success(self.request, "Product added to Shopcart ")
+        messages.success(self.request, "Product added to cart ")
         return super().form_valid(form)
+
+class CartView(DetailView):
+    template_name = 'cart.html'
+    context_object_name = 'cart_object'
     
+    def get_object(self):
+        return Cart.objects.get(user_id=self.request.user.id, product_id = 1)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart = Cart.objects.filter(user_id=self.request.user.id)
+        total=0
+        for rs in cart:
+            total += rs.product.price * rs.quantity
+        context['cart'] = cart
+        context['total'] = total
+        return context
