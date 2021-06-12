@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import View, DetailView, ListView, edit
 from django.core.paginator import Paginator
-from .models import Cart, Product
-from .forms import CartForm, UserSignUpForm
+from .models import Cart, Product, Order, OrderDetail
+from .forms import CartForm, UserSignUpForm, OrderForm
 from django.urls import reverse_lazy
 from django.contrib import messages
 
@@ -42,17 +42,17 @@ class AddCartView(edit.FormView):
         current_user = self.request.user
         product_id = self.kwargs['pk']
         product = Product.objects.get(pk=product_id)
-        checkinproduct = Cart.objects.filter(user_id=current_user.id) # Check product in shopcart
+        checkinproduct = Cart.objects.filter(user_id=current_user.id) # Check product in cart
         data = self.get_context_data()
         if checkinproduct:
             control = 1 # The product is in the cart
         else:
             control = 0 # The product is not in the cart"""
-        if control==1: # Update  shopcart
+        if control==1: # Update  cart
             data = Cart.objects.get(product_id=product_id, user_id=current_user.id)
             data.quantity += form.cleaned_data['quantity']
             data.save()  # save data
-        else : # Inser to Shopcart
+        else : # Inser to cart
             data = Cart()
             data.user = current_user
             data.product =product
@@ -77,3 +77,53 @@ class CartView(DetailView):
         context['cart'] = cart
         context['total'] = total
         return context
+
+class OrderView(ListView):
+    template_name = 'order/order.html'
+    form_class = OrderForm
+    model = Order
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart = Cart.objects.filter(user_id=self.request.user.id)
+        total = 0
+        for rs in cart:
+            total += rs.product.price * rs.quantity
+        context['cart'] = cart
+        context['total'] = total
+        return context
+
+    def form_valid(self, form):
+        current_user = self.request.user
+        cart = Cart.objects.filter(user_id=self.request.user.id)
+        total = 0
+        for rs in cart:
+            total += rs.product.price * rs.quantity
+        data = Order()
+        data.first_name = form.cleaned_data['first_name'] #get product quantity from form
+        data.last_name = form.cleaned_data['last_name']
+        data.address = form.cleaned_data['address']
+        data.city = form.cleaned_data['city']
+        data.phone = form.cleaned_data['phone']
+        data.user = current_user
+        data.total = total
+        data.save() #
+
+
+        for rs in cart:
+            detail = OrderDetail()
+            detail.order        = Order.objects.get(order_id=data.id) # Order Id
+            detail.product_id   = rs.product_id
+            detail.user         = current_user
+            detail.quantity     = rs.quantity
+            detail.price    = rs.product.price
+            detail.amount        = rs.amount
+            detail.save()
+                
+            Cart.objects.filter(user_id=current_user.id).delete() # Clear & Delete cart
+            messages.success(self.request, "Your Order has been completed. Thank you ")
+
+        # form= OrderForm()
+        # profile = UserProfile.objects.get(user_id=current_user.id)
+        
+        

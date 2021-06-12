@@ -1,67 +1,69 @@
-{% block body %}
-<div class="section">
-    <!-- container -->
-    <div class="container">
-        <!-- row -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="order-summary clearfix">
-                    <div class="section-title">
-                        <h3 class="title">Shopcart Product List</h3>
-                    </div>
-                    <table class="shopping-cart-table table">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Product</th>
-                            <th class="text-center">Price</th>
-                            <th class="text-center">Quantity</th>
-                            <th class="text-center">Total</th>
-                            <th class="text-right"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for rs in cart %}
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="order-summary clearfix">
+                        <div class="section-title">
+                            <h3 class="title">Shopcart Product List</h3>
+                        </div>
+                        <table class="shopping-cart-table table">
+                            <thead>
                             <tr>
-                                <td class="details">
-                                    <a href="/product/{{ rs.product.id }}">{{rs.product.name}}</a>  </td>
-                                <td class="qty text-center"><strong>{{rs.quantity}}</strong></td>
-                                <td class="text-right"><a href="/order/deletefromcart/{{ rs.id }}" onclick="return confirm('Delete ! Are you sure?')" class="main-btn icon-btn"><i class="fa fa-close"></i></a></td>
+                                <th></th>
+                                <th>Product</th>
+                                <th class="text-center">Price</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-right"></th>
                             </tr>
+                            </thead>
+                            <tbody>
+                            {% for rs in cart %}
+                                <tr>
+                                    <td class="details">
+                                        <a href="/product/{{ rs.product.id }}">{{rs.product.name}}</a>  </td>
+                                    <td class="qty text-center"><strong>{{rs.quantity}}</strong></td>
+                                    <td class="text-right"><a href="/order/deletefromcart/{{ rs.id }}" onclick="return confirm('Delete ! Are you sure?')" class="main-btn icon-btn"><i class="fa fa-close"></i></a></td>
+                                </tr>
 
-                        {% endfor %}
+                            {% endfor %}
 
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <th class="empty" colspan="3"></th>
-                            <th>SUBTOTAL</th>
-                            <th colspan="2" class="sub-total"></th>
-                        </tr>
-                        <tr>
-                            <th class="empty" colspan="3"></th>
-                            <th>SHIPING</th>
-                            <td colspan="2">Free Shipping</td>
-                        </tr>
-                        <tr>
-                            <th class="empty" colspan="3"></th>
-                            <th>TOTAL</th>
-                            <th colspan="2" class="total"></th>
-                        </tr>
-                        </tfoot>
-                    </table>
-                    
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th class="empty" colspan="3"></th>
+                                <th>SUBTOTAL</th>
+                                <th colspan="2" class="sub-total"></th>
+                            </tr>
+                            <tr>
+                                <th class="empty" colspan="3"></th>
+                                <th>SHIPING</th>
+                                <td colspan="2">Free Shipping</td>
+                            </tr>
+                            <tr>
+                                <th class="empty" colspan="3"></th>
+                                <th>TOTAL</th>
+                                <th colspan="2" class="total"></th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        
+                    </div>
+
                 </div>
 
+
             </div>
-
-
+            <a href="/orderproduct/" class="btn btn-success">Order</a>
+            <!-- /row -->
         </div>
-        <button class="btn btn-success">Order</button>
-        <!-- /row -->
+        <!-- /container -->
     </div>
-    <!-- /container -->
-</div>
-<!-- /section -->
+    <!-- /section -->
 
-{% endblock %}
+{% endblock content %}
