@@ -26,18 +26,23 @@ class ProductView(View):
         product_objects = paginator.get_page(page)
         return render(self.request,'index.html',{'product_objects':product_objects})
 
-class ProductDetailView(DetailView):
+class ProductDetailView(edit.FormMixin,DetailView):
     context_object_name = 'product_object'
     template_name = 'product/product_detail.html'
+    form_class = CartForm
+    success_url = '/'
 
     def get_object(self):
         return Product.objects.get(pk=self.kwargs['pk'])
 
-class AddCartView(edit.FormView):
-    form_class = CartForm
-    template_name = 'cart/cart_add.html'
-    success_url = '/'
-
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+    
     def form_valid(self, form):
         current_user = self.request.user
         product_id = self.kwargs['pk']
