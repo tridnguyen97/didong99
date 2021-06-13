@@ -28,22 +28,21 @@ class ProductView(View):
 
 class ProductDetailView(DetailView):
     context_object_name = 'product_object'
-    template_name = 'product_detail.html'
+    template_name = 'product/product_detail.html'
 
     def get_object(self):
         return Product.objects.get(pk=self.kwargs['pk'])
 
 class AddCartView(edit.FormView):
     form_class = CartForm
-    template_name = 'cart_add.html'
+    template_name = 'cart/cart_add.html'
     success_url = '/'
 
     def form_valid(self, form):
         current_user = self.request.user
         product_id = self.kwargs['pk']
         product = Product.objects.get(pk=product_id)
-        checkinproduct = Cart.objects.filter(user_id=current_user.id) # Check product in cart
-        data = self.get_context_data()
+        checkinproduct = Cart.objects.filter(product_id=product_id, user_id=current_user.id) # Check product in cart
         if checkinproduct:
             control = 1 # The product is in the cart
         else:
@@ -62,7 +61,7 @@ class AddCartView(edit.FormView):
         return super().form_valid(form)
 
 class CartView(DetailView):
-    template_name = 'cart.html'
+    template_name = 'cart/cart.html'
     context_object_name = 'cart_object'
     
     def get_object(self):
@@ -78,10 +77,11 @@ class CartView(DetailView):
         context['total'] = total
         return context
 
-class OrderView(ListView):
+class OrderView(edit.FormView):
     template_name = 'order/order.html'
     form_class = OrderForm
     model = Order
+    success_url = '/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -112,7 +112,7 @@ class OrderView(ListView):
 
         for rs in cart:
             detail = OrderDetail()
-            detail.order        = Order.objects.get(order_id=data.id) # Order Id
+            detail.order        = Order.objects.get(pk=data.id) # Order Id
             detail.product_id   = rs.product_id
             detail.user         = current_user
             detail.quantity     = rs.quantity
@@ -122,8 +122,6 @@ class OrderView(ListView):
                 
             Cart.objects.filter(user_id=current_user.id).delete() # Clear & Delete cart
             messages.success(self.request, "Your Order has been completed. Thank you ")
-
-        # form= OrderForm()
-        # profile = UserProfile.objects.get(user_id=current_user.id)
+        return super().form_valid(form)
         
         

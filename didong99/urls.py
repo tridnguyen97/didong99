@@ -17,6 +17,9 @@ from django.contrib import admin, auth
 from django.urls import path, include
 from banhang import views
 from django.contrib.auth.decorators import login_required
+from django.conf.urls import url
+from django.conf import settings
+from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,3 +31,4 @@ urlpatterns = [
     path('cart/',login_required(views.CartView.as_view()), name='cart'),
     path('orderproduct/', views.OrderView.as_view(), name='order'),
 ]
+urlpatterns += [url(r'^media/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT})]

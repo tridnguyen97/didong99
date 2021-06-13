@@ -8,7 +8,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     price = models.FloatField()
     description = models.TextField()
-    image = models.CharField(max_length=300)
+    image = models.ImageField(upload_to='media/',null=False)
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

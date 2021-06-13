@@ -1,15 +1,6 @@
-{% block body %}
+{% extends "base.html" %}
 
-    <!-- BREADCRUMB -->
-    <div id="breadcrumb">
-        <div class="container">
-            <ul class="breadcrumb">
-                <li><a href="/">Home</a></li>
-                <li class="active">Order Page</li>
-            </ul>
-        </div>
-    </div>
-    <!-- /BREADCRUMB -->
+{% block content %}
     <!-- section -->
     <div class="section">
         <!-- container -->
@@ -39,7 +30,7 @@
                             <p><label for="id_first_name">Country :</label>
                                 <input type="text" name="country" class="input" id="id_country" value="{{ profile.country }}"></p>
                             <div class="pull-right">
-                                <button  type="submit" class="primary-btn">Complete Order</button>
+                                <button  type="submit" class="primary-btn" value="Save">Complete Order</button>
                             </div>
                         </div>
                     </div>
