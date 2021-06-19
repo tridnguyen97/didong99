@@ -20,10 +20,6 @@ class ProductView(View):
 
     def get(self, *arg, **kwargs):
         product_objects = Product.objects.all()
-        # paginator 
-        paginator = Paginator(product_objects, 4)
-        page = self.request.GET.get('page')
-        product_objects = paginator.get_page(page)
         return render(self.request,'index.html',{'product_objects':product_objects})
 
 class ProductDetailView(edit.FormMixin,DetailView):
@@ -70,7 +66,11 @@ class CartView(DetailView):
     context_object_name = 'cart_object'
     
     def get_object(self):
-        return Cart.objects.get(user_id=self.request.user.id, product_id = 1)
+        try:
+            cart = Cart.objects.get(user_id=self.request.user.id, product_id = 1)
+        except(Cart.DoesNotExist):
+            cart = None
+        return cart
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

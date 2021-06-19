@@ -6,7 +6,7 @@ from datetime import datetime
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
-    price = models.FloatField()
+    price = models.IntegerField()
     description = models.TextField()
     image = models.ImageField(upload_to='media/',null=False)
 
